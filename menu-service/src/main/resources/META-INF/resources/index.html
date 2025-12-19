@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Restaurant Menu</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px; }
+        h1 { text-align: center; color: #333; }
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
+            gap: 20px; 
+            max-width: 1000px; 
+            margin: 0 auto; 
+        }
+        .card { 
+            background: white; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+            overflow: hidden; 
+            transition: transform 0.2s; 
+        }
+        .card:hover { transform: translateY(-5px); }
+        .card-header { 
+            background-color: #ff6b6b; 
+            color: white; 
+            padding: 15px; 
+            font-size: 1.2em; 
+            font-weight: bold; 
+            text-align: center;
+        }
+        .card-body { padding: 15px; }
+        .category { 
+            display: inline-block; 
+            background: #eee; 
+            padding: 5px 10px; 
+            border-radius: 20px; 
+            font-size: 0.8em; 
+            margin-bottom: 10px;
+        }
+        .price { 
+            font-size: 1.5em; 
+            color: #2ecc71; 
+            font-weight: bold; 
+            float: right; 
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🍽️ Наше Меню</h1>
+    <div id="menu-container" class="grid">
+        <p style="text-align:center; width:100%">Завантаження меню...</p>
+    </div>
+
+    <script>
+        // Це магія: JavaScript звертається до вашого Java-бекенду
+        fetch('/menu')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('menu-container');
+                container.innerHTML = ''; // Очистити напис "Завантаження"
+
+                data.forEach(dish => {
+                    // Вибираємо іконку залежно від категорії
+                    let icon = '🍴';
+                    if (dish.category === 'Pizza') icon = '🍕';
+                    if (dish.category === 'Sushi') icon = '🍣';
+                    if (dish.category === 'Soup') icon = '🍜';
+                    if (dish.category === 'Drink') icon = '🥤';
+
+                    // Створюємо картку для кожної страви
+                    const card = `
+                        <div class="card">
+                            <div class="card-header">${icon} ${dish.name}</div>
+                            <div class="card-body">
+                                <span class="category">${dish.category}</span>
+                                <div class="price">${dish.price} грн</div>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += card;
+                });
+            })
+            .catch(err => {
+                document.getElementById('menu-container').innerHTML = '<p style="color:red">Помилка завантаження меню :(</p>';
+                console.error(err);
+            });
+    </script>
+</body>
+</html>
